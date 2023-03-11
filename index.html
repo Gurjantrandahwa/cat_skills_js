@@ -1,0 +1,158 @@
+<!DOCTYPE html>
+<html lang="aa">
+<head>
+    <title>Skills Ranks</title>
+</head>
+
+<style>
+
+    html {
+        font-family: arial, sans-serif;
+
+    }
+
+    h1 {
+        color: #d92828;
+        text-align: center;
+    }
+
+    #ranks-table {
+        font-family: arial, sans-serif;
+        border-collapse: collapse;
+        width: 100%;
+
+    }
+
+    #top-table, #bottom-table {
+
+        border-collapse: collapse;
+    }
+
+    th {
+        color: firebrick;
+        font-size: 18px;
+        font-weight: 600;
+    }
+
+    td, th {
+        border: 1px solid #dddddd;
+        text-align: left;
+        padding: 8px;
+    }
+
+    tr:nth-child(even) {
+        background-color: #dddddd;
+    }
+
+    .center {
+        display: flex;
+        margin: auto;
+        justify-content: center;
+        flex-direction: column;
+        width: 50%;
+
+    }
+</style>
+<body>
+<h1>Skills Ranks</h1>
+<table id="ranks-table">
+    <thead>
+    <tr>
+        <th>Skill</th>
+        <th>Rank in 2019</th>
+        <th>Rank in 2024</th>
+    </tr>
+    </thead>
+    <tbody>
+    </tbody>
+</table>
+<div class="center">
+    <h1>Top Skills</h1>
+    <table id="top-table">
+        <thead>
+        <tr>
+            <th>Rank</th>
+            <th>Skill</th>
+            <th>2024 Score</th>
+        </tr>
+        </thead>
+        <tbody>
+        </tbody>
+    </table>
+</div>
+<div class="center">
+    <h1>Bottom Skills</h1>
+    <table id="bottom-table">
+        <thead>
+        <tr>
+            <th>Rank</th>
+            <th>Skill</th>
+            <th>2024 Score</th>
+        </tr>
+        </thead>
+        <tbody>
+        </tbody>
+    </table>
+</div>
+
+
+<script>
+    fetch('skills.json')
+        .then(response => response.json())
+        .then(data => {
+            const tableBody = document.querySelector('#ranks-table tbody');
+            for (const skill in data) {
+                const row = document.createElement('tr');
+                const skillName = document.createElement('td');
+                skillName.textContent = skill;
+                row.appendChild(skillName);
+                const rank2019 = document.createElement('td');
+                rank2019.textContent = 1 + Object.keys(data).length - Math.round(data[skill]['2019 score'] / 10);
+                row.appendChild(rank2019);
+                const rank2024 = document.createElement('td');
+                rank2024.textContent = 1 + Object.keys(data).length - Math.round(data[skill]['2024 score'] / 10);
+                row.appendChild(rank2024);
+                tableBody.appendChild(row);
+            }
+        });
+
+    const topTable = document.getElementById('top-table').getElementsByTagName('tbody')[0];
+    const bottomTable = document.getElementById('bottom-table').getElementsByTagName('tbody')[0];
+
+    fetch('skills.json')
+        .then(response => response.json())
+        .then(data => {
+            const skillScores = Object.keys(data).map(skill => ({
+                skill,
+                score: data[skill]['2024 score']
+            }));
+
+            skillScores.sort((a, b) => b.score - a.score);
+
+            // Display top three
+            skillScores.slice(0, 3).forEach((skill, index) => {
+                const row = topTable.insertRow();
+                const rank = row.insertCell(0);
+                const name = row.insertCell(1);
+                const score = row.insertCell(2);
+                rank.innerHTML = index + 1;
+                name.innerHTML = skill.skill;
+                score.innerHTML = skill.score;
+            });
+
+            // Display bottom three
+            skillScores.slice(-3).forEach((skill, index) => {
+                const row = bottomTable.insertRow();
+                const rank = row.insertCell(0);
+                const name = row.insertCell(1);
+                const score = row.insertCell(2);
+                rank.innerHTML = index + 1;
+                name.innerHTML = skill.skill;
+                score.innerHTML = skill.score;
+            });
+        });
+
+
+</script>
+</body>
+</html>
